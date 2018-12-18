@@ -4,7 +4,7 @@
 #include "ddebug.h"
 
 
-#include <ndk.h>
+#include "ndk.h"
 #include <iconv.h>
 #include <ngx_config.h>
 #include <ngx_core.h>
