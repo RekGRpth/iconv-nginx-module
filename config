@@ -97,11 +97,11 @@ ngx_addon_name=ngx_http_iconv_module
 
 HTTP_ICONV_DEPS="                                                           \
                     $ngx_addon_dir/src/ddebug.h                             \
-                    $ngx_addon_dir/src/ndk.h                                \
+                    $ngx_addon_dir/src/ndk_set_var.h                                \
                 "
 HTTP_ICONV_SRCS="                                                           \
                     $ngx_addon_dir/src/ngx_http_iconv_module.c              \
-                    $ngx_addon_dir/src/ndk.c                                \
+                    $ngx_addon_dir/src/ndk_set_var.c                                \
                 "
 
 if test -n "$ngx_module_link"; then
@@ -119,4 +119,3 @@ else
     NGX_ADDON_DEPS="$NGX_ADDON_DEPS $HTTP_ICONV_DEPS"
 fi
 
-CFLAGS="$CFLAGS -DNDK_SET_VAR"
