@@ -4,10 +4,7 @@
 #include "ddebug.h"
 
 
-#include "ndk_set_var.h"
 #include <iconv.h>
-#include <ngx_config.h>
-#include <ngx_core.h>
 #include <ngx_http.h>
 
 
