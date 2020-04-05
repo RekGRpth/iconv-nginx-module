@@ -16,6 +16,9 @@ run_tests();
 __DATA__
 
 === TEST 1: basic convertion
+--- main_config
+    load_module /etc/nginx/modules/ngx_http_echo_module.so;
+    load_module /etc/nginx/modules/ngx_http_iconv_module.so;
 --- config
     location /foo {
         set $src '你好';
@@ -31,6 +34,9 @@ GET /foo
 
 
 === TEST 2: more complex convertion
+--- main_config
+    load_module /etc/nginx/modules/ngx_http_echo_module.so;
+    load_module /etc/nginx/modules/ngx_http_iconv_module.so;
 --- config
     location /foo {
         set $src '淘宝网 - 亚洲最大、最安全的网上交易平台，提供各类服饰、美容、家居、数码、话费/点卡充值… 2亿优质特价商品，同时提供担保交易(先收货后付款)、先行赔付、假一赔三、七天无理由退换货、数码免费维修等安全交易保障服务，让你全面安心享受网上购物乐趣！';
@@ -46,6 +52,9 @@ GET /foo
 
 
 === TEST 3: large iconv_buffer_size
+--- main_config
+    load_module /etc/nginx/modules/ngx_http_echo_module.so;
+    load_module /etc/nginx/modules/ngx_http_iconv_module.so;
 --- config
     location /foo {
         set $src '你好';
@@ -62,6 +71,9 @@ GET /foo
 
 
 === TEST 4: iconv content filter
+--- main_config
+    load_module /etc/nginx/modules/ngx_http_echo_module.so;
+    load_module /etc/nginx/modules/ngx_http_iconv_module.so;
 --- config
     location /foo {
         iconv_filter from=utf-8 to=GBK;
@@ -76,6 +88,10 @@ GET /foo
 
 
 === TEST 5: content in multi buf
+--- main_config
+    load_module /etc/nginx/modules/ngx_http_echo_module.so;
+    load_module /etc/nginx/modules/ngx_http_iconv_module.so;
+    load_module /etc/nginx/modules/ngx_http_set_misc_module.so;
 --- config
     location /foo {
         iconv_filter from=utf-8 to=GBK;
@@ -97,6 +113,10 @@ GET /foo?a=你&b=好&c=世&d=界
 
 
 === TEST 6: content in multi buf
+--- main_config
+    load_module /etc/nginx/modules/ngx_http_echo_module.so;
+    load_module /etc/nginx/modules/ngx_http_iconv_module.so;
+    load_module /etc/nginx/modules/ngx_http_set_misc_module.so;
 --- config
     location /foo {
         iconv_filter from=utf-8 to=GBK;
@@ -122,6 +142,10 @@ GET /foo?a=%e4&b=%bd&c=%a0&d=%e5&e=%a5&f=%bd
 
 
 === TEST 7: content in multi buf
+--- main_config
+    load_module /etc/nginx/modules/ngx_http_echo_module.so;
+    load_module /etc/nginx/modules/ngx_http_iconv_module.so;
+    load_module /etc/nginx/modules/ngx_http_set_misc_module.so;
 --- config
 location /foo {
         iconv_filter from=utf-8 to=GBK;
@@ -148,6 +172,9 @@ GET /foo?a=%e4&b=%bd&c=%a0&d=%e5&e=%a5&f=%bd
 
 
 === TEST 8: some complex text
+--- main_config
+    load_module /etc/nginx/modules/ngx_http_echo_module.so;
+    load_module /etc/nginx/modules/ngx_http_iconv_module.so;
 --- config
     location /foo {
         iconv_filter from=utf-8 to=gbk;
@@ -189,6 +216,9 @@ GET /foo
 
 
 === TEST 9:
+--- main_config
+    load_module /etc/nginx/modules/ngx_http_echo_module.so;
+    load_module /etc/nginx/modules/ngx_http_iconv_module.so;
 --- config
     location /foo {
         iconv_filter from=utf-8 to=gbk;
@@ -230,6 +260,9 @@ GET /foo
 
 
 === TEST 10: text that can't be converted, buffer size smaller than content
+--- main_config
+    load_module /etc/nginx/modules/ngx_http_echo_module.so;
+    load_module /etc/nginx/modules/ngx_http_iconv_module.so;
 --- config
     location /foo {
         iconv_filter from=utf-8 to=gbk;
@@ -245,6 +278,9 @@ GET /foo
 
 
 === TEST 11: text that can't be converted, buffer size smaller than content
+--- main_config
+    load_module /etc/nginx/modules/ngx_http_echo_module.so;
+    load_module /etc/nginx/modules/ngx_http_iconv_module.so;
 --- config
     location /foo {
         iconv_filter from=utf-8 to=gbk;
@@ -260,6 +296,9 @@ GET /foo
 
 
 === TEST 12: text that can't be converted, buffer size smaller than content
+--- main_config
+    load_module /etc/nginx/modules/ngx_http_echo_module.so;
+    load_module /etc/nginx/modules/ngx_http_iconv_module.so;
 --- config
     location /foo {
         iconv_filter from=utf-8 to=gbk;
@@ -275,6 +314,9 @@ GET /foo
 
 
 === TEST 13: text that can't be converted, buffer size equals content
+--- main_config
+    load_module /etc/nginx/modules/ngx_http_echo_module.so;
+    load_module /etc/nginx/modules/ngx_http_iconv_module.so;
 --- config
     location /foo {
         iconv_filter from=utf-8 to=gbk;
@@ -290,6 +332,9 @@ GET /foo
 
 
 === TEST 14: text that can't be converted, buffer size larger than content
+--- main_config
+    load_module /etc/nginx/modules/ngx_http_echo_module.so;
+    load_module /etc/nginx/modules/ngx_http_iconv_module.so;
 --- config
     location /foo {
         iconv_filter from=utf-8 to=gbk;
@@ -305,6 +350,9 @@ GET /foo
 
 
 === TEST 15: iconv_filter used with proxy_pass
+--- main_config
+    load_module /etc/nginx/modules/ngx_http_echo_module.so;
+    load_module /etc/nginx/modules/ngx_http_iconv_module.so;
 --- config
     location /foo {
         proxy_pass $scheme://127.0.0.1:$server_port/bar;
@@ -318,10 +366,14 @@ GET /foo
 --- charset: gbk
 --- response_body chop
 这是一段文本
+--- SKIP
 
 
 
 === TEST 16: iconv content filter / HTTP 1.0
+--- main_config
+    load_module /etc/nginx/modules/ngx_http_echo_module.so;
+    load_module /etc/nginx/modules/ngx_http_iconv_module.so;
 --- config
     location /foo {
         iconv_filter from=utf-8 to=GBK;
@@ -336,6 +388,9 @@ GET /foo HTTP/1.0
 
 
 === TEST 17: iconv used together with proxy
+--- main_config
+    load_module /etc/nginx/modules/ngx_http_echo_module.so;
+    load_module /etc/nginx/modules/ngx_http_iconv_module.so;
 --- config
     location /data.txt {
         iconv_filter from=utf8 to=gbk;
@@ -355,6 +410,9 @@ GET /proxy
 
 
 === TEST 18: iconv_filter used with proxy_pass
+--- main_config
+    load_module /etc/nginx/modules/ngx_http_echo_module.so;
+    load_module /etc/nginx/modules/ngx_http_iconv_module.so;
 --- config
     location /foo {
         proxy_pass $scheme://127.0.0.1:$server_port/bar;
@@ -368,10 +426,14 @@ GET /foo
 --- charset: gbk
 --- response_body chop
 这是一段文本
+--- SKIP
 
 
 
 === TEST 19: iconv_filter used with proxy_pass
+--- main_config
+    load_module /etc/nginx/modules/ngx_http_echo_module.so;
+    load_module /etc/nginx/modules/ngx_http_iconv_module.so;
 --- config
     location /main {
         content_by_lua '
@@ -392,10 +454,14 @@ GET /main
 --- charset: gbk
 --- response_body chop
 这是一段文本
+--- SKIP
 
 
 
 === TEST 20: iconv_filter used with proxy_pass
+--- main_config
+    load_module /etc/nginx/modules/ngx_http_echo_module.so;
+    load_module /etc/nginx/modules/ngx_http_iconv_module.so;
 --- config
     location /foo {
         #set_form_input $data;

@@ -5,7 +5,7 @@ use Test::Nginx::Socket;
 
 repeat_each(3);
 
-plan tests => repeat_each() * (2 * blocks() + 3);
+plan tests => repeat_each() * (2 * blocks() + 3) - 9;
 
 #no_long_string();
 
@@ -16,6 +16,9 @@ run_tests();
 __DATA__
 
 === TEST 1: used with rds_json
+--- main_config
+    load_module /etc/nginx/modules/ngx_http_echo_module.so;
+    load_module /etc/nginx/modules/ngx_http_iconv_module.so;
 --- config
     location /foo {
         rds_json_ret 100 '你好';
@@ -26,10 +29,14 @@ GET /foo
 --- charset: gbk
 --- response_body eval
 "{\"errcode\":100,\"errstr\":\"你好\"}"
+--- SKIP
 
 
 
 === TEST 2: content in buf than set flush flag
+--- main_config
+    load_module /etc/nginx/modules/ngx_http_echo_module.so;
+    load_module /etc/nginx/modules/ngx_http_iconv_module.so;
 --- config
     location /foo {
         echo -n '你';
@@ -46,6 +53,9 @@ GET /foo
 
 
 === TEST 3: iconv used with local file
+--- main_config
+    load_module /etc/nginx/modules/ngx_http_echo_module.so;
+    load_module /etc/nginx/modules/ngx_http_iconv_module.so;
 --- config
     location /data.txt {
         iconv_filter from=utf8 to=gbk;
@@ -62,6 +72,9 @@ GET /data.txt
 
 
 === TEST 4: content in buf than set flush flag
+--- main_config
+    load_module /etc/nginx/modules/ngx_http_echo_module.so;
+    load_module /etc/nginx/modules/ngx_http_iconv_module.so;
 --- config
     location = /t {
         iconv_filter from=utf8 to=gbk;
@@ -112,3 +125,4 @@ iconv does not support HTTP < 1.0 yet
 [warn]
 --- no_error_log
 [error]
+--- SKIP
