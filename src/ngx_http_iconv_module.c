@@ -393,7 +393,7 @@ ngx_http_do_iconv(ngx_http_request_t *r, ngx_chain_t **c, void *data,
     cd = iconv_open((const char *) to, (const char *) from);
 
     if (cd == (iconv_t) -1) {
-        dd("iconv open error");
+        ngx_log_error(NGX_LOG_ERR, r->connection->log, 0, "iconv open error");
         return NGX_ERROR;
     }
 
@@ -424,7 +424,7 @@ conv_begin:
             if (rv == (size_t) -1) {
                 if (errno == EINVAL) {
                     cv += iconv_buf_size - rest;
-                    dd("iconv error:EINVAL,len=%d cv=%d rest=%d", (int) len,
+                    ngx_log_error(NGX_LOG_ERR, r->connection->log, 0, "iconv error:EINVAL,len=%d cv=%d rest=%d", (int) len,
                        (int) cv, (int) rest);
                     goto conv_done;
                 }
