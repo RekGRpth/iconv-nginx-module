@@ -393,7 +393,7 @@ ngx_http_do_iconv(ngx_http_request_t *r, ngx_chain_t **c, void *data,
     cd = iconv_open((const char *) to, (const char *) from);
 
     if (cd == (iconv_t) -1) {
-        ngx_log_error(NGX_LOG_ERR, r->connection->log, 0, "iconv open error");
+        ngx_log_error(NGX_LOG_ERR, r->connection->log, 0, "iconv open error from=%s, to=%s", from, to);
         return NGX_ERROR;
     }
 
