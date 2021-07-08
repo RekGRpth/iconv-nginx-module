@@ -393,7 +393,7 @@ GET /foo HTTP/1.0
     load_module /etc/nginx/modules/ngx_http_iconv_module.so;
 --- config
     location /data.txt {
-        iconv_filter from=utf8 to=gbk;
+        iconv_filter from=utf-8 to=gbk;
     }
     location /proxy {
         proxy_pass $scheme://127.0.0.1:$server_port/data.txt;
