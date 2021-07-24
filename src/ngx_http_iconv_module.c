@@ -8,8 +8,9 @@
 #include <ngx_http.h>
 
 
-static ngx_uint_t       ngx_http_iconv_filter_used = 0;
-
+typedef struct {
+    ngx_flag_t enable;
+} ngx_http_iconv_srv_conf_t;
 
 typedef struct {
     size_t               buf_size;
@@ -24,7 +25,6 @@ typedef struct {
 } ngx_http_iconv_ctx_t;
 
 
-static ngx_int_t ngx_http_iconv_filter_pre(ngx_conf_t *cf);
 static ngx_int_t ngx_http_iconv_filter_init(ngx_conf_t *cf);
 static ngx_int_t ngx_http_iconv_header_filter(ngx_http_request_t *r);
 static ngx_int_t ngx_http_iconv_body_filter(ngx_http_request_t *r,
@@ -42,6 +42,9 @@ static char *ngx_http_set_iconv_conf_handler(ngx_conf_t *cf,
     ngx_command_t *cmd, void *conf);
 static ngx_int_t ngx_http_set_iconv_handler(ngx_http_request_t *r,
     ngx_str_t *res, ngx_http_variable_value_t *v);
+static void *ngx_http_iconv_create_srv_conf(ngx_conf_t *cf);
+static char *ngx_http_iconv_merge_srv_conf(ngx_conf_t *cf, void *parent,
+    void *child);
 static void *ngx_http_iconv_create_loc_conf(ngx_conf_t *cf);
 static char *ngx_http_iconv_merge_loc_conf(ngx_conf_t *cf, void *parent,
     void *child);
@@ -78,12 +81,12 @@ static ngx_command_t ngx_http_iconv_commands[] = {
 
 
 static ngx_http_module_t ngx_http_iconv_module_ctx = {
-    ngx_http_iconv_filter_pre,          /* preconfiguration */
+    NULL,                               /* preconfiguration */
     ngx_http_iconv_filter_init,         /* postconfiguration */
     NULL,                               /* create main configuration */
     NULL,                               /* init main configuration */
-    NULL,                               /* create server configuration */
-    NULL,                               /* merge server configuration */
+    ngx_http_iconv_create_srv_conf,     /* create server configuration */
+    ngx_http_iconv_merge_srv_conf,      /* merge server configuration */
     ngx_http_iconv_create_loc_conf,     /* create location configuration */
     ngx_http_iconv_merge_loc_conf       /* merge location configuration */
 };
@@ -110,17 +113,10 @@ static ngx_http_output_body_filter_pt   ngx_http_next_body_filter;
 
 
 static ngx_int_t
-ngx_http_iconv_filter_pre(ngx_conf_t *cf)
-{
-    ngx_http_iconv_filter_used  = 0;
-    return NGX_OK;
-}
-
-
-static ngx_int_t
 ngx_http_iconv_filter_init(ngx_conf_t *cf)
 {
-    if (ngx_http_iconv_filter_used) {
+    ngx_http_iconv_srv_conf_t *iscf = ngx_http_conf_get_module_srv_conf(cf, ngx_http_iconv_module);
+    if (iscf->enable) {
         ngx_http_next_header_filter = ngx_http_top_header_filter;
         ngx_http_top_header_filter = ngx_http_iconv_header_filter;
         ngx_http_next_body_filter = ngx_http_top_body_filter;
@@ -535,12 +531,14 @@ static char *
 ngx_http_iconv_conf_handler(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
 {
     ngx_http_iconv_loc_conf_t   *ilcf;
+    ngx_http_iconv_srv_conf_t   *iscf;
     ngx_str_t                   *value;
     u_char                      *p;
     size_t                       tl;
     ilcf = conf;
 
-    ngx_http_iconv_filter_used = 1;
+    iscf = ngx_http_conf_get_module_srv_conf(cf, ngx_http_iconv_module);
+    iscf->enable = 1;
 
     ilcf->enable = 1;
     value = cf->args->elts;
@@ -682,11 +680,39 @@ ngx_http_set_iconv_handler(ngx_http_request_t *r, ngx_str_t *res,
 
 
 static void *
+ngx_http_iconv_create_srv_conf(ngx_conf_t *cf)
+{
+    ngx_http_iconv_srv_conf_t       *iscf;
+
+    iscf = ngx_pcalloc(cf->pool, sizeof(ngx_http_iconv_srv_conf_t));
+    if (iscf == NULL) {
+        return NULL;
+    }
+
+    iscf->enable = NGX_CONF_UNSET;
+    return iscf;
+}
+
+
+static char *
+ngx_http_iconv_merge_srv_conf(ngx_conf_t *cf, void *parent, void *child)
+{
+    ngx_http_iconv_srv_conf_t       *conf, *prev;
+
+    conf = child;
+    prev = parent;
+
+    ngx_conf_merge_value(conf->enable, prev->enable, 0);
+
+    return NGX_CONF_OK;
+}
+
+static void *
 ngx_http_iconv_create_loc_conf(ngx_conf_t *cf)
 {
     ngx_http_iconv_loc_conf_t       *ilcf;
 
-    ilcf = ngx_palloc(cf->pool, sizeof(ngx_http_iconv_loc_conf_t));
+    ilcf = ngx_pcalloc(cf->pool, sizeof(ngx_http_iconv_loc_conf_t));
     if (ilcf == NULL) {
         return NULL;
     }
@@ -710,14 +736,14 @@ ngx_http_iconv_merge_loc_conf(ngx_conf_t *cf, void *parent, void *child)
     dd("before merge:conf->size=%d,prev->size=%d", (int) conf->buf_size,
        (int) prev->buf_size);
 
-    if (conf->buf_size <= 1 || prev->buf_size <= 1) {
+    ngx_conf_merge_size_value(conf->buf_size, prev->buf_size,
+                              (size_t) ngx_pagesize);
+
+    if (conf->buf_size <= 1) {
         ngx_log_error(NGX_LOG_ERR, cf->log, 0,
                       "iconv_buffer_size must not less than 2 bytes");
         return NGX_CONF_ERROR;
     }
-
-    ngx_conf_merge_size_value(conf->buf_size, prev->buf_size,
-                              (size_t) ngx_pagesize);
 
     dd("after merge:conf->size=%d,prev->size=%d", (int) conf->buf_size,
        (int) prev->buf_size);
