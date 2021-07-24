@@ -8,9 +8,6 @@
 #include <ngx_http.h>
 
 
-static ngx_int_t        iconv_buf_size;
-
-
 static ngx_uint_t       ngx_http_iconv_filter_used = 0;
 
 
@@ -155,7 +152,6 @@ ngx_http_iconv_header_filter(ngx_http_request_t *r)
         r->keepalive = 0;
     }
 
-    iconv_buf_size = ilcf->buf_size;
     r->filter_need_in_memory = 1;
 
     ngx_http_clear_content_length(r);
@@ -386,6 +382,7 @@ ngx_http_do_iconv(ngx_http_request_t *r, ngx_chain_t **c, void *data,
     ngx_chain_t      *cl, *chain, **ll;
     ngx_buf_t        *b;
     size_t            cv, rest, rv;
+    ngx_http_iconv_loc_conf_t   *ilcf;
 
     cv = 0;
     dd("iconv from=%s, to=%s", from, to);
@@ -396,7 +393,8 @@ ngx_http_do_iconv(ngx_http_request_t *r, ngx_chain_t **c, void *data,
         return NGX_ERROR;
     }
 
-    dd("len=%zu, iconv_buf_size=%zu", len, iconv_buf_size);
+    ilcf = ngx_http_get_module_loc_conf(r, ngx_http_iconv_module);
+    dd("len=%zu, ilcf->buf_size=%zu", len, ilcf->buf_size);
     ll = &chain;
 
 conv_begin:
@@ -408,21 +406,21 @@ conv_begin:
             return NGX_ERROR;
         }
         /* --- b->temporary--- */
-        b = ngx_create_temp_buf(r->pool, iconv_buf_size);
+        b = ngx_create_temp_buf(r->pool, ilcf->buf_size);
         if (b == NULL) {
             iconv_close(cd);
             return NGX_ERROR;
         }
 
         cl->buf = b;
-        rest = iconv_buf_size;
+        rest = ilcf->buf_size;
 
         do {
             rv = iconv(cd, (void *) &data, &len, (void *) &b->last, &rest);
 
             if (rv == (size_t) -1) {
                 if (errno == EINVAL) {
-                    cv += iconv_buf_size - rest;
+                    cv += ilcf->buf_size - rest;
                     ngx_log_error(NGX_LOG_ERR, r->connection->log, 0, "iconv error:EINVAL,len=%d cv=%d rest=%d", (int) len,
                        (int) cv, (int) rest);
                     goto conv_done;
@@ -442,7 +440,7 @@ conv_begin:
                     if (len >= 1) {
                         if (rest == 0) {
                             dd("EILSEQ:rest=0");
-                            cv += iconv_buf_size - rest;
+                            cv += ilcf->buf_size - rest;
                             *ll = cl;
                             ll = &cl->next;
                             goto conv_begin;
@@ -478,7 +476,7 @@ conv_begin:
             }
 
             if (errno == EINVAL) {
-                cv += iconv_buf_size - rest;
+                cv += ilcf->buf_size - rest;
                 dd("iconv error:EINVAL,len=%d cv=%d rest=%d", (int) len,
                         (int) cv, (int) rest);
                 break;
@@ -487,7 +485,7 @@ conv_begin:
             }
         }
         */
-        cv += iconv_buf_size - rest;
+        cv += ilcf->buf_size - rest;
         *ll = cl;
         ll = &cl->next;
     }
@@ -631,7 +629,6 @@ ngx_http_set_iconv_handler(ngx_http_request_t *r, ngx_str_t *res,
     u_char                      *src, *dst, *p;
     size_t                       converted;
     u_char *                     end;
-    ngx_http_iconv_loc_conf_t   *ilcf;
     ngx_int_t                    rc;
 
     if (v->len == 0) {
@@ -639,10 +636,6 @@ ngx_http_set_iconv_handler(ngx_http_request_t *r, ngx_str_t *res,
         res->len = 0;
         return NGX_OK;
     }
-
-    ilcf = ngx_http_get_module_loc_conf(r, ngx_http_iconv_module);
-    iconv_buf_size = ilcf->buf_size;
-    dd("iconv_buf_size=%d", (int) iconv_buf_size);
 
     src = ngx_palloc(r->pool, v[1].len + 1);
     if (src == NULL) {
