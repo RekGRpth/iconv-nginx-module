@@ -17,7 +17,7 @@ static ngx_uint_t       ngx_http_iconv_filter_used = 0;
 
 typedef struct {
     size_t               buf_size;
-    ngx_flag_t           enabled;
+    ngx_flag_t           enable;
     u_char              *from;
     u_char              *to;
 } ngx_http_iconv_loc_conf_t;
@@ -142,7 +142,7 @@ ngx_http_iconv_header_filter(ngx_http_request_t *r)
     ngx_http_iconv_ctx_t            *ctx;
 
     ilcf = ngx_http_get_module_loc_conf(r, ngx_http_iconv_module);
-    if (!ilcf->enabled) {
+    if (!ilcf->enable) {
         return ngx_http_next_header_filter(r);
     }
 
@@ -545,7 +545,7 @@ ngx_http_iconv_conf_handler(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
 
     ngx_http_iconv_filter_used = 1;
 
-    ilcf->enabled = 1;
+    ilcf->enable = 1;
     value = cf->args->elts;
 
     tl = sizeof("from=") - 1;
@@ -702,7 +702,7 @@ ngx_http_iconv_create_loc_conf(ngx_conf_t *cf)
     }
 
     ilcf->buf_size = NGX_CONF_UNSET_SIZE;
-    ilcf->enabled = NGX_CONF_UNSET;
+    ilcf->enable = NGX_CONF_UNSET;
     ilcf->from = NGX_CONF_UNSET_PTR;
     ilcf->to = NGX_CONF_UNSET_PTR;
     return ilcf;
@@ -732,7 +732,7 @@ ngx_http_iconv_merge_loc_conf(ngx_conf_t *cf, void *parent, void *child)
     dd("after merge:conf->size=%d,prev->size=%d", (int) conf->buf_size,
        (int) prev->buf_size);
 
-    ngx_conf_merge_value(conf->enabled, prev->enabled, 0);
+    ngx_conf_merge_value(conf->enable, prev->enable, 0);
     ngx_conf_merge_ptr_value(conf->from, (void *)prev->from, (char *) "utf-8");
     ngx_conf_merge_ptr_value(conf->to, (void *)prev->to, (char *) "gbk");
 
