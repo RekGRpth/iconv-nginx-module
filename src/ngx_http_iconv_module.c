@@ -9,7 +9,6 @@
 
 
 static ngx_int_t        iconv_buf_size;
-static ngx_int_t        max_iconv_bufs;
 
 
 static ngx_uint_t       ngx_http_iconv_filter_used = 0;
@@ -591,8 +590,6 @@ ngx_http_set_iconv_conf_handler(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
 {
     ndk_set_var_t                filter;
     ngx_str_t                   *value, s[3];
-
-    max_iconv_bufs = 256;
 
     filter.type = NDK_SET_VAR_MULTI_VALUE;
     filter.func = ngx_http_set_iconv_handler;
