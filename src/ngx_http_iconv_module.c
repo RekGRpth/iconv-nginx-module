@@ -10,7 +10,7 @@
 
 typedef struct {
     ngx_flag_t enable;
-} ngx_http_iconv_srv_conf_t;
+} ngx_http_iconv_main_conf_t;
 
 typedef struct {
     size_t               buf_size;
@@ -42,9 +42,7 @@ static char *ngx_http_set_iconv_conf_handler(ngx_conf_t *cf,
     ngx_command_t *cmd, void *conf);
 static ngx_int_t ngx_http_set_iconv_handler(ngx_http_request_t *r,
     ngx_str_t *res, ngx_http_variable_value_t *v);
-static void *ngx_http_iconv_create_srv_conf(ngx_conf_t *cf);
-static char *ngx_http_iconv_merge_srv_conf(ngx_conf_t *cf, void *parent,
-    void *child);
+static void *ngx_http_iconv_create_main_conf(ngx_conf_t *cf);
 static void *ngx_http_iconv_create_loc_conf(ngx_conf_t *cf);
 static char *ngx_http_iconv_merge_loc_conf(ngx_conf_t *cf, void *parent,
     void *child);
@@ -83,10 +81,10 @@ static ngx_command_t ngx_http_iconv_commands[] = {
 static ngx_http_module_t ngx_http_iconv_module_ctx = {
     NULL,                               /* preconfiguration */
     ngx_http_iconv_filter_init,         /* postconfiguration */
-    NULL,                               /* create main configuration */
+    ngx_http_iconv_create_main_conf,    /* create main configuration */
     NULL,                               /* init main configuration */
-    ngx_http_iconv_create_srv_conf,     /* create server configuration */
-    ngx_http_iconv_merge_srv_conf,      /* merge server configuration */
+    NULL,                               /* create server configuration */
+    NULL,                               /* merge server configuration */
     ngx_http_iconv_create_loc_conf,     /* create location configuration */
     ngx_http_iconv_merge_loc_conf       /* merge location configuration */
 };
@@ -115,8 +113,8 @@ static ngx_http_output_body_filter_pt   ngx_http_next_body_filter;
 static ngx_int_t
 ngx_http_iconv_filter_init(ngx_conf_t *cf)
 {
-    ngx_http_iconv_srv_conf_t *iscf = ngx_http_conf_get_module_srv_conf(cf, ngx_http_iconv_module);
-    if (iscf->enable) {
+    ngx_http_iconv_main_conf_t *imcf = ngx_http_conf_get_module_main_conf(cf, ngx_http_iconv_module);
+    if (imcf->enable) {
         ngx_http_next_header_filter = ngx_http_top_header_filter;
         ngx_http_top_header_filter = ngx_http_iconv_header_filter;
         ngx_http_next_body_filter = ngx_http_top_body_filter;
@@ -531,14 +529,14 @@ static char *
 ngx_http_iconv_conf_handler(ngx_conf_t *cf, ngx_command_t *cmd, void *conf)
 {
     ngx_http_iconv_loc_conf_t   *ilcf;
-    ngx_http_iconv_srv_conf_t   *iscf;
+    ngx_http_iconv_main_conf_t  *imcf;
     ngx_str_t                   *value;
     u_char                      *p;
     size_t                       tl;
     ilcf = conf;
 
-    iscf = ngx_http_conf_get_module_srv_conf(cf, ngx_http_iconv_module);
-    iscf->enable = 1;
+    imcf = ngx_http_conf_get_module_main_conf(cf, ngx_http_iconv_module);
+    imcf->enable = 1;
 
     ilcf->enable = 1;
     value = cf->args->elts;
@@ -680,32 +678,18 @@ ngx_http_set_iconv_handler(ngx_http_request_t *r, ngx_str_t *res,
 
 
 static void *
-ngx_http_iconv_create_srv_conf(ngx_conf_t *cf)
+ngx_http_iconv_create_main_conf(ngx_conf_t *cf)
 {
-    ngx_http_iconv_srv_conf_t       *iscf;
+    ngx_http_iconv_main_conf_t       *imcf;
 
-    iscf = ngx_pcalloc(cf->pool, sizeof(ngx_http_iconv_srv_conf_t));
-    if (iscf == NULL) {
+    imcf = ngx_pcalloc(cf->pool, sizeof(ngx_http_iconv_main_conf_t));
+    if (imcf == NULL) {
         return NULL;
     }
 
-    iscf->enable = NGX_CONF_UNSET;
-    return iscf;
+    return imcf;
 }
 
-
-static char *
-ngx_http_iconv_merge_srv_conf(ngx_conf_t *cf, void *parent, void *child)
-{
-    ngx_http_iconv_srv_conf_t       *conf, *prev;
-
-    conf = child;
-    prev = parent;
-
-    ngx_conf_merge_value(conf->enable, prev->enable, 0);
-
-    return NGX_CONF_OK;
-}
 
 static void *
 ngx_http_iconv_create_loc_conf(ngx_conf_t *cf)
