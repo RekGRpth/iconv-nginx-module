@@ -95,12 +95,8 @@ fi
 
 ngx_addon_name=ngx_http_iconv_module
 
-HTTP_ICONV_DEPS="                                                           \
-                    $ngx_addon_dir/src/ddebug.h                             \
-                "
-HTTP_ICONV_SRCS="                                                           \
-                    $ngx_addon_dir/src/ngx_http_iconv_module.c              \
-                "
+HTTP_ICONV_DEPS="$ngx_addon_dir/src/ddebug.h"
+HTTP_ICONV_SRCS="$ngx_addon_dir/src/ngx_http_iconv_module.c"
 
 if test -n "$ngx_module_link"; then
     ngx_module_type=HTTP_AUX_FILTER
@@ -108,7 +104,7 @@ if test -n "$ngx_module_link"; then
     ngx_module_incs=
     ngx_module_deps="$HTTP_ICONV_DEPS"
     ngx_module_srcs="$HTTP_ICONV_SRCS"
-    ngx_module_libs="-liconv"
+    ngx_module_libs=
 
     . auto/module
 else
