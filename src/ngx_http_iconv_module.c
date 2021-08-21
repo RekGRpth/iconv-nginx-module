@@ -4,7 +4,7 @@
 #include "ddebug.h"
 
 
-#include <gnu-libiconv/iconv.h>
+#include <iconv.h>
 #include <ngx_http.h>
 
 
