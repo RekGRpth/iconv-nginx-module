@@ -104,7 +104,7 @@ if test -n "$ngx_module_link"; then
     ngx_module_incs=
     ngx_module_deps="$HTTP_ICONV_DEPS"
     ngx_module_srcs="$HTTP_ICONV_SRCS"
-    ngx_module_libs=
+    ngx_module_libs="-liconv"
 
     . auto/module
 else
