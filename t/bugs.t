@@ -17,6 +17,7 @@ __DATA__
 
 === TEST 1: used with rds_json
 --- main_config
+    load_module /etc/nginx/modules/ndk_http_module.so;
     load_module /etc/nginx/modules/ngx_http_echo_module.so;
     load_module /etc/nginx/modules/ngx_http_iconv_module.so;
 --- config
@@ -35,6 +36,7 @@ GET /foo
 
 === TEST 2: content in buf than set flush flag
 --- main_config
+    load_module /etc/nginx/modules/ndk_http_module.so;
     load_module /etc/nginx/modules/ngx_http_echo_module.so;
     load_module /etc/nginx/modules/ngx_http_iconv_module.so;
 --- config
@@ -54,6 +56,7 @@ GET /foo
 
 === TEST 3: iconv used with local file
 --- main_config
+    load_module /etc/nginx/modules/ndk_http_module.so;
     load_module /etc/nginx/modules/ngx_http_echo_module.so;
     load_module /etc/nginx/modules/ngx_http_iconv_module.so;
 --- config
@@ -73,6 +76,7 @@ GET /data.txt
 
 === TEST 4: content in buf than set flush flag
 --- main_config
+    load_module /etc/nginx/modules/ndk_http_module.so;
     load_module /etc/nginx/modules/ngx_http_echo_module.so;
     load_module /etc/nginx/modules/ngx_http_iconv_module.so;
 --- config

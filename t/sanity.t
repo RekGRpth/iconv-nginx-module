@@ -17,6 +17,7 @@ __DATA__
 
 === TEST 1: basic convertion
 --- main_config
+    load_module /etc/nginx/modules/ndk_http_module.so;
     load_module /etc/nginx/modules/ngx_http_echo_module.so;
     load_module /etc/nginx/modules/ngx_http_iconv_module.so;
 --- config
@@ -35,6 +36,7 @@ GET /foo
 
 === TEST 2: more complex convertion
 --- main_config
+    load_module /etc/nginx/modules/ndk_http_module.so;
     load_module /etc/nginx/modules/ngx_http_echo_module.so;
     load_module /etc/nginx/modules/ngx_http_iconv_module.so;
 --- config
@@ -53,6 +55,7 @@ GET /foo
 
 === TEST 3: large iconv_buffer_size
 --- main_config
+    load_module /etc/nginx/modules/ndk_http_module.so;
     load_module /etc/nginx/modules/ngx_http_echo_module.so;
     load_module /etc/nginx/modules/ngx_http_iconv_module.so;
 --- config
@@ -72,6 +75,7 @@ GET /foo
 
 === TEST 4: iconv content filter
 --- main_config
+    load_module /etc/nginx/modules/ndk_http_module.so;
     load_module /etc/nginx/modules/ngx_http_echo_module.so;
     load_module /etc/nginx/modules/ngx_http_iconv_module.so;
 --- config
@@ -89,6 +93,7 @@ GET /foo
 
 === TEST 5: content in multi buf
 --- main_config
+    load_module /etc/nginx/modules/ndk_http_module.so;
     load_module /etc/nginx/modules/ngx_http_echo_module.so;
     load_module /etc/nginx/modules/ngx_http_iconv_module.so;
     load_module /etc/nginx/modules/ngx_http_set_misc_module.so;
@@ -114,6 +119,7 @@ GET /foo?a=你&b=好&c=世&d=界
 
 === TEST 6: content in multi buf
 --- main_config
+    load_module /etc/nginx/modules/ndk_http_module.so;
     load_module /etc/nginx/modules/ngx_http_echo_module.so;
     load_module /etc/nginx/modules/ngx_http_iconv_module.so;
     load_module /etc/nginx/modules/ngx_http_set_misc_module.so;
@@ -143,6 +149,7 @@ GET /foo?a=%e4&b=%bd&c=%a0&d=%e5&e=%a5&f=%bd
 
 === TEST 7: content in multi buf
 --- main_config
+    load_module /etc/nginx/modules/ndk_http_module.so;
     load_module /etc/nginx/modules/ngx_http_echo_module.so;
     load_module /etc/nginx/modules/ngx_http_iconv_module.so;
     load_module /etc/nginx/modules/ngx_http_set_misc_module.so;
@@ -173,6 +180,7 @@ GET /foo?a=%e4&b=%bd&c=%a0&d=%e5&e=%a5&f=%bd
 
 === TEST 8: some complex text
 --- main_config
+    load_module /etc/nginx/modules/ndk_http_module.so;
     load_module /etc/nginx/modules/ngx_http_echo_module.so;
     load_module /etc/nginx/modules/ngx_http_iconv_module.so;
 --- config
@@ -217,6 +225,7 @@ GET /foo
 
 === TEST 9:
 --- main_config
+    load_module /etc/nginx/modules/ndk_http_module.so;
     load_module /etc/nginx/modules/ngx_http_echo_module.so;
     load_module /etc/nginx/modules/ngx_http_iconv_module.so;
 --- config
@@ -261,6 +270,7 @@ GET /foo
 
 === TEST 10: text that can't be converted, buffer size smaller than content
 --- main_config
+    load_module /etc/nginx/modules/ndk_http_module.so;
     load_module /etc/nginx/modules/ngx_http_echo_module.so;
     load_module /etc/nginx/modules/ngx_http_iconv_module.so;
 --- config
@@ -279,6 +289,7 @@ GET /foo
 
 === TEST 11: text that can't be converted, buffer size smaller than content
 --- main_config
+    load_module /etc/nginx/modules/ndk_http_module.so;
     load_module /etc/nginx/modules/ngx_http_echo_module.so;
     load_module /etc/nginx/modules/ngx_http_iconv_module.so;
 --- config
@@ -297,6 +308,7 @@ GET /foo
 
 === TEST 12: text that can't be converted, buffer size smaller than content
 --- main_config
+    load_module /etc/nginx/modules/ndk_http_module.so;
     load_module /etc/nginx/modules/ngx_http_echo_module.so;
     load_module /etc/nginx/modules/ngx_http_iconv_module.so;
 --- config
@@ -315,6 +327,7 @@ GET /foo
 
 === TEST 13: text that can't be converted, buffer size equals content
 --- main_config
+    load_module /etc/nginx/modules/ndk_http_module.so;
     load_module /etc/nginx/modules/ngx_http_echo_module.so;
     load_module /etc/nginx/modules/ngx_http_iconv_module.so;
 --- config
@@ -333,6 +346,7 @@ GET /foo
 
 === TEST 14: text that can't be converted, buffer size larger than content
 --- main_config
+    load_module /etc/nginx/modules/ndk_http_module.so;
     load_module /etc/nginx/modules/ngx_http_echo_module.so;
     load_module /etc/nginx/modules/ngx_http_iconv_module.so;
 --- config
@@ -351,6 +365,7 @@ GET /foo
 
 === TEST 15: iconv_filter used with proxy_pass
 --- main_config
+    load_module /etc/nginx/modules/ndk_http_module.so;
     load_module /etc/nginx/modules/ngx_http_echo_module.so;
     load_module /etc/nginx/modules/ngx_http_iconv_module.so;
 --- config
@@ -372,6 +387,7 @@ GET /foo
 
 === TEST 16: iconv content filter / HTTP 1.0
 --- main_config
+    load_module /etc/nginx/modules/ndk_http_module.so;
     load_module /etc/nginx/modules/ngx_http_echo_module.so;
     load_module /etc/nginx/modules/ngx_http_iconv_module.so;
 --- config
@@ -389,6 +405,7 @@ GET /foo HTTP/1.0
 
 === TEST 17: iconv used together with proxy
 --- main_config
+    load_module /etc/nginx/modules/ndk_http_module.so;
     load_module /etc/nginx/modules/ngx_http_echo_module.so;
     load_module /etc/nginx/modules/ngx_http_iconv_module.so;
 --- config
@@ -411,6 +428,7 @@ GET /proxy
 
 === TEST 18: iconv_filter used with proxy_pass
 --- main_config
+    load_module /etc/nginx/modules/ndk_http_module.so;
     load_module /etc/nginx/modules/ngx_http_echo_module.so;
     load_module /etc/nginx/modules/ngx_http_iconv_module.so;
 --- config
@@ -432,6 +450,7 @@ GET /foo
 
 === TEST 19: iconv_filter used with proxy_pass
 --- main_config
+    load_module /etc/nginx/modules/ndk_http_module.so;
     load_module /etc/nginx/modules/ngx_http_echo_module.so;
     load_module /etc/nginx/modules/ngx_http_iconv_module.so;
 --- config
@@ -460,6 +479,7 @@ GET /main
 
 === TEST 20: iconv_filter used with proxy_pass
 --- main_config
+    load_module /etc/nginx/modules/ndk_http_module.so;
     load_module /etc/nginx/modules/ngx_http_echo_module.so;
     load_module /etc/nginx/modules/ngx_http_iconv_module.so;
 --- config
