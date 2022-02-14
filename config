@@ -1,18 +1,18 @@
-#if test -n "$ngx_module_link"; then
-#    if test -n "$NDK_SRCS"; then
-#        echo "found ngx_devel_kit for ngx_iconv; looks good."
-#    else
-#        echo "error: ngx_devel_kit is required to build ngx_iconv; please put it before ngx_iconv." 1>&2
-#        exit 1
-#    fi
-#else
-#    if echo $HTTP_MODULES | grep " ndk_http_module" > /dev/null; then
-#        echo "found ngx_devel_kit for ngx_iconv; looks good."
-#    else
-#        echo "error: ngx_devel_kit is required to build ngx_iconv; please put it before ngx_iconv." 1>&2
-#        exit 1
-#    fi
-#fi
+if test -n "$ngx_module_link"; then
+    if test -n "$NDK_SRCS"; then
+        echo "found ngx_devel_kit for ngx_iconv; looks good."
+    else
+        echo "error: ngx_devel_kit is required to build ngx_iconv; please put it before ngx_iconv." 1>&2
+        exit 1
+    fi
+else
+    if echo $HTTP_MODULES | grep " ndk_http_module" > /dev/null; then
+        echo "found ngx_devel_kit for ngx_iconv; looks good."
+    else
+        echo "error: ngx_devel_kit is required to build ngx_iconv; please put it before ngx_iconv." 1>&2
+        exit 1
+    fi
+fi
 
 ngx_feature_name=
 ngx_feature_run=no
@@ -113,3 +113,4 @@ else
     NGX_ADDON_DEPS="$NGX_ADDON_DEPS $HTTP_ICONV_DEPS"
 fi
 
+CFLAGS="$CFLAGS -DNDK_SET_VAR"
